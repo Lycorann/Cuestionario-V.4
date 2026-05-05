@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuestionario Interactivo</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #4fc3f7, #ba68c8);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    h1 { color: #6a1b9a; }
+    #question { font-size: 18px; margin: 20px 0; }
+    .option {
+        display: block;
+        margin: 8px 0;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #6ec6ff;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .option:hover { background: #e1f5fe; }
+    button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #6a1b9a;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    button:hover { background: #4a148c; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎓 Cuestionario</h1>
+    <div id="score">Puntaje: 0</div>
+    <div id="question"></div>
+    <div id="options"></div>
+    <button onclick="nextQuestion()">Siguiente</button>
+</div>
+
+<script>
+const quiz = [
+{
+q: "¿Qué caracteriza a las tecnologías emergentes?",
+options: ["A) Son antiguas", "B) Están en constante desarrollo", "C) No cambian", "D) Son obsoletas"],
+correct: 1
+},
+{
+q: "¿Qué permiten hacer con el aprendizaje?",
+options: ["A) Limitarlo", "B) Personalizarlo", "C) Ignorarlo", "D) Reducirlo"],
+correct: 1
+},
+{
+q: "¿Cómo ayudan al acceso a la educación?",
+options: ["A) Lo dificultan", "B) Permiten aprender desde cualquier lugar", "C) Lo eliminan", "D) Solo en escuelas"],
+correct: 1
+},
+{
+q: "¿Qué es la inteligencia artificial?",
+options: ["A) Un robot", "B) Tecnología que imita la inteligencia humana", "C) Un juego", "D) Un libro"],
+correct: 1
+},
+{
+q: "¿Cómo ayuda la IA al estudiante?",
+options: ["A) No ayuda", "B) Se adapta a su nivel", "C) Confunde", "D) Castiga"],
+correct: 1
+},
+{
+q: "¿Qué son las clases virtuales?",
+options: ["A) Juegos", "B) Educación por internet", "C) Libros", "D) Exámenes"],
+correct: 1
+},
+{
+q: "¿Qué ventaja tienen?",
+options: ["A) Son difíciles", "B) Acceso desde cualquier lugar", "C) Son lentas", "D) No sirven"],
+correct: 1
+},
+{
+q: "¿Qué dispositivos se usan?",
+options: ["A) Televisores antiguos", "B) Celulares y tablets", "C) Máquinas viejas", "D) Radios"],
+correct: 1
+},
+{
+q: "¿Qué fomentan estas tecnologías?",
+options: ["A) Desorden", "B) Inclusión", "C) Aburrimiento", "D) Aislamiento"],
+correct: 1
+},
+{
+q: "¿Qué logran en la educación?",
+options: ["A) Empeorarla", "B) Fortalecerla", "C) Eliminarla", "D) Reducirla"],
+correct: 1
+}
+];
+
+let current = 0;
+let score = 0;
+let selected = null;
+
+function showQuestion() {
+    document.getElementById("question").innerText = quiz[current].q;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+    selected = null;
+
+    quiz[current].options.forEach((opt, index) => {
+        const div = document.createElement("div");
+        div.classList.add("option");
+        div.innerText = opt;
+        div.onclick = () => selectOption(index, div);
+        optionsDiv.appendChild(div);
+    });
+}
+
+function selectOption(index, element) {
+    selected = index;
+    document.querySelectorAll(".option").forEach(el => el.style.background = "");
+    element.style.background = "#b2ebf2";
+}
+
+function nextQuestion() {
+    if (selected === null) return;
+
+    if (selected === quiz[current].correct) {
+        score++;
+    }
+
+    document.getElementById("score").innerText = "Puntaje: " + score;
+
+    if (current < quiz.length - 1) {
+        current++;
+        showQuestion();
+    } else {
+        document.getElementById("question").innerText = "🎉 Terminaste! Puntaje final: " + score + "/" + quiz.length;
+        document.getElementById("options").innerHTML = "";
+    }
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
