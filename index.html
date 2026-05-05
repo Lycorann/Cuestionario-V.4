@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuestionario Interactivo</title>
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:#333;
+}
+.container{
+    background:white;
+    width:90%;
+    max-width:600px;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    text-align:center;
+}
+h1{color:#5e35b1;}
+.progress-bar{
+    width:100%;
+    height:10px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+.progress{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    transition:0.4s;
+}
+#question{
+    font-size:20px;
+    margin:20px 0;
+}
+.option{
+    padding:12px;
+    margin:8px 0;
+    border-radius:12px;
+    border:2px solid #ddd;
+    cursor:pointer;
+    transition:0.3s;
+}
+.option:hover{background:#f0f4ff;}
+.correct{background:#c8e6c9 !important;}
+.wrong{background:#ffcdd2 !important;}
+button{
+    margin-top:15px;
+    padding:10px 20px;
+    border:none;
+    border-radius:12px;
+    background:#5e35b1;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+button:hover{background:#4527a0;}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎓 Cuestionario</h1>
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+    <div id="score">Puntaje: 0</div>
+    <div id="question"></div>
+    <div id="options"></div>
+    <button onclick="nextQuestion()">Siguiente</button>
+</div>
+
+<script>
+const data = [
+["¿Qué caracteriza a las tecnologías emergentes?","Están en constante desarrollo"],
+["¿Qué permiten hacer con el aprendizaje?","Personalizarlo"],
+["¿Cómo ayudan al acceso a la educación?","Permiten aprender desde cualquier lugar"],
+["¿Qué fomentan entre estudiantes?","Interacción y colaboración"],
+["¿Qué cambian en la enseñanza tradicional?","La modernizan"],
+["¿Por qué son importantes en zonas rurales?","Porque llevan educación a distancia"],
+["¿Qué problema ayudan a reducir?","Brechas educativas"],
+["¿Cómo hacen las clases más interesantes?","Con recursos digitales"],
+["¿Qué permiten al estudiante hacer mejor?","Participar más"],
+["¿Qué cambio generan en la educación?","Innovación"],
+
+["¿Qué es la inteligencia artificial en palabras simples?","Tecnología que imita la inteligencia humana"],
+["¿Cómo ayuda la IA al estudiante?","Se adapta a su nivel"],
+["¿Qué tipo de apoyo brindan las tutorías virtuales?","Apoyo personalizado"],
+["¿Qué hace la corrección automática?","Revisa tareas rápidamente"],
+["¿Cómo genera ejercicios la IA?","Según el nivel del estudiante"],
+["¿Qué analiza la IA del estudiante?","Su ritmo de aprendizaje"],
+["¿Qué tipo de enseñanza permite la IA?","Personalizada"],
+["¿Qué ventaja tiene la retroalimentación inmediata?","Corregir errores rápido"],
+["¿Cómo mejora el rendimiento académico?","Adaptando el aprendizaje"],
+["¿Por qué se debe usar con responsabilidad?","Por temas éticos"],
+
+["¿Qué son las clases virtuales?","Educación a distancia por internet"],
+["¿Qué herramientas se usan en clases virtuales?","Plataformas digitales"],
+["¿Cuál es una ventaja importante?","Acceso desde cualquier lugar"],
+["¿Qué permite la flexibilidad de horarios?","Estudiar en distintos momentos"],
+["¿Qué recursos hacen las clases más dinámicas?","Videos y materiales interactivos"],
+["¿En qué situaciones fueron muy importantes?","En la pandemia"],
+["¿Cómo ayudan a estudiantes de zonas alejadas?","Les permiten estudiar sin viajar"],
+["¿Qué tipo de barreras eliminan?","Geográficas"],
+["¿Qué permiten las plataformas digitales?","Comunicación entre docente y estudiante"],
+["¿Cómo cambian la educación tradicional?","La hacen más accesible"],
+
+["¿Qué dispositivos se usan en educación actualmente?","Celulares y tablets"],
+["¿Para qué sirven los celulares en el aprendizaje?","Para acceder a contenidos"],
+["¿Qué permiten hacer las tablets?","Leer y estudiar digitalmente"],
+["¿Qué tipo de lectura se promueve?","Lectura digital"],
+["¿Qué habilidades se desarrollan?","Lectura y escritura"],
+["¿Por qué son útiles estos dispositivos?","Porque son fáciles de usar"],
+["¿Qué ventaja tienen frente a libros físicos?","Acceso rápido a información"],
+["¿Cómo ayudan al estudiante?","Facilitan el aprendizaje"],
+["¿Qué tipo de aprendizaje promueven?","Digital"],
+["¿Cómo complementan la educación?","Refuerzan contenidos"],
+
+["¿Cuál es un beneficio principal de estas tecnologías?","Mejorar la educación"],
+["¿Cómo ayudan al estudiante?","Permiten aprender de forma autónoma"],
+["¿Qué fomentan en la educación?","Inclusión"],
+["¿Qué habilidades desarrollan?","Habilidades digitales"],
+["¿Cómo mejoran la enseñanza?","Haciéndola más dinámica"],
+["¿Qué tipo de aprendizaje promueven?","Autónomo"],
+["¿Qué integración permiten?","Saberes científicos y locales"],
+["¿Por qué son importantes en Bolivia?","Por su diversidad"],
+["¿Cómo ayudan a la comunidad?","Aplicando conocimientos"],
+["¿Qué logran en el modelo educativo?","Lo fortalecen"]
+];
+
+let current=0, score=0, selected=null;
+
+// generar opciones aleatorias
+function generateOptions(correct){
+    let opts=[correct];
+    while(opts.length<4){
+        let rand=data[Math.floor(Math.random()*data.length)][1];
+        if(!opts.includes(rand)) opts.push(rand);
+    }
+    return opts.sort(()=>Math.random()-0.5);
+}
+
+function showQuestion(){
+    let q=data[current];
+    document.getElementById("question").innerText=q[0];
+    let options=generateOptions(q[1]);
+    let container=document.getElementById("options");
+    container.innerHTML="";
+    selected=null;
+
+    options.forEach(opt=>{
+        let div=document.createElement("div");
+        div.className="option";
+        div.innerText=opt;
+        div.onclick=()=>selectOption(div,opt,q[1]);
+        container.appendChild(div);
+    });
+
+    // barra progreso
+    let progress=((current)/data.length)*100;
+    document.getElementById("progress").style.width=progress+"%";
+}
+
+function selectOption(element,chosen,correct){
+    if(selected!==null) return;
+    selected=chosen;
+
+    document.querySelectorAll(".option").forEach(el=>{
+        if(el.innerText===correct) el.classList.add("correct");
+        if(el.innerText===chosen && chosen!==correct) el.classList.add("wrong");
+    });
+
+    if(chosen===correct){
+        score++;
+        document.getElementById("score").innerText="Puntaje: "+score;
+    }
+}
+
+function nextQuestion(){
+    if(selected===null) return;
+
+    current++;
+    if(current<data.length){
+        showQuestion();
+    }else{
+        document.getElementById("question").innerHTML=
+        "🎉 Terminaste<br>Puntaje final: "+score+" / "+data.length;
+        document.getElementById("options").innerHTML="";
+        document.getElementById("progress").style.width="100%";
+    }
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
